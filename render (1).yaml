@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: devoir-backend
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: TARGET_EMAIL
+        sync: false
