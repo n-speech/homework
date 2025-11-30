@@ -50,8 +50,11 @@ function initDashboardPage() {
   }
 
   const user = JSON.parse(userJson);
-  document.getElementById("welcome").textContent = `Привет, ${user.name}!`;
 
+  // Приветствие с именем ученика
+  document.getElementById("welcome").textContent = `Привет, ${user.firstName} ${user.lastName}!`;
+
+  // Кнопка выхода
   document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem(STORAGE_KEY);
     window.location.href = "index.html";
