@@ -1,26 +1,14 @@
 [
   {
-    "email": "test@mail.com",
+    "email": "maria@example.com",
     "password": "12345",
     "name": "Мария",
-    "courses": [
-      "Французский A1",
-      "Алфавит (урок 1)",
-      "Русский для иностранцев"
-    ]
+    "courses": [1, 3]   // id курсов, на которые записана
   },
   {
-    "email": "alex@mail.com",
-    "password": "99999",
-    "name": "Alex",
-    "courses": [
-      "Французский A1"
-    ]
-  },
-  {
-    "email": "noone@mail.com",
-    "password": "00000",
-    "name": "No One",
-    "courses": []
+    "email": "alex@example.com",
+    "password": "12345",
+    "name": "Алекс",
+    "courses": [2]
   }
 ]
