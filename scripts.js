@@ -49,12 +49,21 @@ async function initLoginPage() {
 
 /* ====== Страница Dashboard ====== */
 function initDashboardPage() {
+  const STORAGE_KEY = "lk_user_cached";
+
+  // Получаем пользователя
   const userJson = localStorage.getItem(STORAGE_KEY);
-  if (!userJson) return (window.location.href = "index.html");
+  if (!userJson) {
+    window.location.href = "index.html";
+    return;
+  }
 
   const user = JSON.parse(userJson);
+
+  // Приветствие
   document.getElementById("welcome").textContent = `Привет, ${user.name}!`;
 
+  // Кнопка выхода
   document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem(STORAGE_KEY);
     window.location.href = "index.html";
@@ -63,21 +72,37 @@ function initDashboardPage() {
   const container = document.getElementById("courses");
   const noCourses = document.getElementById("no-courses");
 
+  // Проверка наличия курсов
   if (!user.courses || user.courses.length === 0) {
     noCourses.textContent = "У вас пока нет активных курсов.";
     return;
   }
 
-  user.courses.forEach(course => {
+  // Полный список курсов
+  const coursesList = [
+    { id: 1, name: "Французский A1" },
+    { id: 2, name: "Французский A2" },
+    { id: 3, name: "Произношение" }
+  ];
+
+  // Отображаем только курсы пользователя
+  user.courses.forEach(courseId => {
+    const course = coursesList.find(c => c.id === courseId);
+    if (!course) return;
+
     const card = document.createElement("div");
     card.className = "course-card";
-    card.textContent = course;
+    card.textContent = course.name; // название курса
     card.addEventListener("click", () => {
-      window.location.href = `course.html?name=${encodeURIComponent(course)}`;
+      window.location.href = `course.html?id=${course.id}`; // переход по id
     });
     container.appendChild(card);
   });
 }
+
+// Автозапуск при загрузке страницы
+document.addEventListener("DOMContentLoaded", initDashboardPage);
+
 
 /* ====== Страница Course ====== */
 function initCoursePage() {
@@ -108,3 +133,4 @@ function initCoursePage() {
     document.addEventListener("DOMContentLoaded", initCoursePage);
   }
 })();
+
