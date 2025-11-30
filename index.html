@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Вход</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Вход — Личный кабинет</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <main class="center">
+    <div class="card login-card">
+      <h1>Вход</h1>
+      <label class="label">Email</label>
+      <input id="email" type="email" placeholder="example@mail.com" />
 
-<div class="login-box">
-  <h2>Вход</h2>
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Пароль">
-  <button onclick="login()">Войти</button>
-  <p id="error"></p>
-</div>
+      <label class="label">Пароль</label>
+      <input id="password" type="password" placeholder="Пароль" />
 
-<script src="scripts.js"></script>
+      <button id="loginBtn" class="btn">Войти</button>
+      <p id="error" class="error"></p>
+
+      <p class="note">Тестовый аккаунт: <b>test@mail.com / 12345</b></p>
+    </div>
+  </main>
+
+  <script src="scripts.js"></script>
 </body>
 </html>
