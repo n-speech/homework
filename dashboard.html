@@ -1,25 +1,88 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Личный кабинет</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Личный кабинет</title>
+
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; }
+h1 { color: #241c15; }
+#logoutBtn { padding: 8px 12px; border: none; background: #ffd966; cursor: pointer; border-radius: 4px; margin-bottom: 20px; }
+#logoutBtn:hover { background: #f2c94c; }
+.course-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  background: #fffbe8;
+  cursor: pointer;
+}
+.course-card:hover { background: #fdf1c4; }
+</style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="container">
-      <h2 id="welcome">Привет!</h2>
-      <button id="logoutBtn" class="btn small">Выйти</button>
-    </div>
-  </header>
 
-  <main class="container">
-    <h3>Мои курсы</h3>
-    <div id="courses" class="courses"></div>
-    <div id="no-courses" class="muted"></div>
-  </main>
+<h1 id="welcome">Личный кабинет</h1>
+<button id="logoutBtn">Выйти</button>
 
-  <script src="scripts.js"></script>
+<h2>Ваши курсы</h2>
+<div id="courses"></div>
+<p id="no-courses"></p>
+
+<script>
+// ====== Настройки ======
+const STORAGE_KEY = "lk_user_cached";
+
+// полный список курсов
+const coursesList = [
+  { id: 1, name: "Французский A1" },
+  { id: 2, name: "Французский A2" },
+  { id: 3, name: "Произношение" }
+];
+
+// ====== Инициализация страницы Dashboard ======
+function initDashboardPage() {
+  const userJson = localStorage.getItem(STORAGE_KEY);
+  if (!userJson) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  const user = JSON.parse(userJson);
+  document.getElementById("welcome").textContent = `Привет, ${user.name}!`;
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem(STORAGE_KEY);
+    window.location.href = "index.html";
+  });
+
+  const container = document.getElementById("courses");
+  const noCourses = document.getElementById("no-courses");
+
+  if (!user.courses || user.courses.length === 0) {
+    noCourses.textContent = "У вас пока нет активных курсов.";
+    return;
+  }
+
+  // показываем только курсы пользователя
+  user.courses.forEach(courseId => {
+    const course = coursesList.find(c => c.id === courseId);
+    if (!course) return;
+
+    const card = document.createElement("div");
+    card.className = "course-card";
+    card.textContent = course.name;
+    card.addEventListener("click", () => {
+      window.location.href = `course.html?id=${course.id}`;
+    });
+    container.appendChild(card);
+  });
+}
+
+// автозапуск
+document.addEventListener("DOMContentLoaded", initDashboardPage);
+</script>
+
 </body>
 </html>
