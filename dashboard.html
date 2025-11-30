@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Личный кабинет</title>
-
 <style>
-body { font-family: Arial, sans-serif; padding: 20px; }
+body { font-family: Arial; padding: 20px; background: #f9f9f9; }
 h1 { color: #241c15; }
 #logoutBtn { padding: 8px 12px; border: none; background: #ffd966; cursor: pointer; border-radius: 4px; margin-bottom: 20px; }
 #logoutBtn:hover { background: #f2c94c; }
@@ -31,7 +30,6 @@ h1 { color: #241c15; }
 <p id="no-courses"></p>
 
 <script>
-// ====== Настройки ======
 const STORAGE_KEY = "lk_user_cached";
 
 // полный список курсов
@@ -41,7 +39,6 @@ const coursesList = [
   { id: 3, name: "Произношение" }
 ];
 
-// ====== Инициализация страницы Dashboard ======
 function initDashboardPage() {
   const userJson = localStorage.getItem(STORAGE_KEY);
   if (!userJson) {
@@ -51,7 +48,7 @@ function initDashboardPage() {
 
   const user = JSON.parse(userJson);
 
-  // Приветствие с именем ученика
+  // Приветствие с полным именем
   document.getElementById("welcome").textContent = `Привет, ${user.firstName} ${user.lastName}!`;
 
   // Кнопка выхода
@@ -77,13 +74,14 @@ function initDashboardPage() {
     card.className = "course-card";
     card.textContent = course.name;
     card.addEventListener("click", () => {
+      // переход на страницу курса с параметром id
       window.location.href = `course.html?id=${course.id}`;
     });
     container.appendChild(card);
   });
 }
 
-// автозапуск
+// автозапуск после загрузки страницы
 document.addEventListener("DOMContentLoaded", initDashboardPage);
 </script>
 
