@@ -1,24 +1,74 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Курс</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Курс</title>
+
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .lesson { border: 1px solid #ddd; padding: 12px; margin: 10px 0; border-radius: 6px; cursor: pointer; }
+        .lesson:hover { background-color: #fafafa; }
+        button { padding: 8px 12px; border: none; background: #ffd966; cursor: pointer; border-radius: 4px; }
+        button:hover { background: #f2c94c; }
+    </style>
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="container">
-      <h2 id="course-title">Курс</h2>
-      <button id="backBtn" class="btn small">Назад</button>
-    </div>
-  </header>
+<h1 id="title"></h1>
+<p id="description"></p>
 
-  <main class="container">
-    <p>Здесь будет содержимое уроков, видео, материалы и кнопка отправки домашнего задания 💛</p>
-  </main>
+<h2>Уроки</h2>
+<div id="lessonsContainer"></div>
 
-  <script src="scripts.js"></script>
+<br>
+<a href="dashboard.html">← Назад</a>
+
+<script>
+// читаем id курса из URL
+const params = new URLSearchParams(window.location.search);
+const courseId = params.get("id");
+
+// список курсов
+const courses = [
+    { id: "1", title: "Французский A1", description: "Базовый курс для начинающих" },
+    { id: "2", title: "Французский A2", description: "Следующий уровень" },
+    { id: "3", title: "Произношение", description: "Работа над звуками" }
+];
+
+// список уроков по курсам
+const lessons = {
+    "1": [
+        { title: "Урок 1 — Алфавит A–F", link: "french-a1-lesson1.html" },
+        { title: "Урок 2 — Алфавит G–L", link: "french-a1-lesson2.html" }
+    ],
+    "2": [
+        { title: "Урок 1 — Повторение A1", link: "a2-lesson1.html" }
+    ],
+    "3": [
+        { title: "Урок 1 — Звуки nasal", link: "prononciation-lesson1.html" }
+    ]
+};
+
+// находим текущий курс
+const course = courses.find(c => c.id === courseId);
+
+// Вывод названия курса
+document.getElementById("title").innerText = course?.title || "Курс не найден";
+document.getElementById("description").innerText = course?.description || "";
+
+// вывод уроков
+const container = document.getElementById("lessonsContainer");
+(lessons[courseId] || []).forEach(lesson => {
+    const div = document.createElement("div");
+    div.className = "lesson";
+    div.innerHTML = `
+        <h3>${lesson.title}</h3>
+        <button onclick="location.href='${lesson.link}'">Открыть</button>
+    `;
+    container.appendChild(div);
+});
+</script>
+
 </body>
 </html>
