@@ -3,6 +3,18 @@
     "email": "test@mail.com",
     "password": "12345",
     "name": "Мария",
-    "courses": []
+    "courses": [
+      "Французский А1",
+      "Алфавит",
+      "Русский для иностранцев"
+    ]
+  },
+  {
+    "email": "alex@mail.com",
+    "password": "99999",
+    "name": "Alex",
+    "courses": [
+      "Французский А1"
+    ]
   }
 ]
