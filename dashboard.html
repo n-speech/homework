@@ -1,4 +1,25 @@
-<h3>Мои курсы</h3>
-<div id="courses"></div>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Личный кабинет</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <h2 id="welcome">Привет!</h2>
+      <button id="logoutBtn" class="btn small">Выйти</button>
+    </div>
+  </header>
 
-<button onclick="logout()">Выйти</button>
+  <main class="container">
+    <h3>Мои курсы</h3>
+    <div id="courses" class="courses"></div>
+    <div id="no-courses" class="muted"></div>
+  </main>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
