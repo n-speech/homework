@@ -19,3 +19,14 @@ input, button {
   font-size: 18px;
   border-radius: 10px;
 }
+
+.course-card {
+  background: white;
+  padding: 15px;
+  margin: 10px auto;
+  max-width: 350px;
+  border-radius: 12px;
+  font-size: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
