@@ -83,10 +83,16 @@ function renderPetCard(pet) {
 }
 
 // ── Календарь ─────────────────────────────────────────────
+let calYear  = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+window.calPrev = function() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); };
+window.calNext = function() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); };
+
 function renderCalendar() {
   const now   = new Date();
-  const year  = now.getFullYear();
-  const month = now.getMonth();
+  const year  = calYear;
+  const month = calMonth;
 
   const months = ['Январь','Февраль','Март','Апрель','Май','Июнь',
                   'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
