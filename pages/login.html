@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход — ВетКлиника</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="login-page">
+  <div class="login-box">
+    <div class="login-logo"><span>🐾</span> ВетКлиника</div>
+    <div class="login-sub">Личный кабинет владельца питомца</div>
+
+    <div class="login-tabs">
+      <button class="login-tab active" id="tab-login" onclick="switchTab('login')">Войти</button>
+      <button class="login-tab" id="tab-register" onclick="switchTab('register')">Регистрация</button>
+    </div>
+
+    <div id="login-error" class="login-error"></div>
+    <div id="login-success" class="login-success"></div>
+
+    <div class="login-form">
+      <div class="form-field">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="email" placeholder="ваш@email.com">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Пароль</label>
+        <input class="form-input" type="password" id="password" placeholder="Минимум 6 символов">
+      </div>
+      <button class="btn-login" id="btn-submit">Войти</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/auth.js"></script>
+<script>
+  let mode = 'login';
+
+  function switchTab(tab) {
+    mode = tab;
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+    document.getElementById('btn-submit').textContent = tab === 'login' ? 'Войти' : 'Зарегистрироваться';
+    document.getElementById('login-error').style.display = 'none';
+    document.getElementById('login-success').style.display = 'none';
+  }
+
+  document.getElementById('btn-submit').addEventListener('click', async () => {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    if (!email || !password) {
+      document.getElementById('login-error').textContent = 'Заполните все поля';
+      document.getElementById('login-error').style.display = 'block';
+      return;
+    }
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.textContent = 'Подождите...';
+    document.getElementById('login-error').style.display = 'none';
+
+    try {
+      if (mode === 'login') {
+        await Auth.login(email, password);
+        window.location.href = 'dashboard.html';
+      } else {
+        await Auth.register(email, password);
+        document.getElementById('login-success').textContent = 'Аккаунт создан! Проверьте email и войдите.';
+        document.getElementById('login-success').style.display = 'block';
+        switchTab('login');
+      }
+    } catch (err) {
+      const msg = err.message.includes('Invalid login') ? 'Неверный email или пароль'
+        : err.message.includes('already registered') ? 'Этот email уже зарегистрирован'
+        : err.message;
+      document.getElementById('login-error').textContent = msg;
+      document.getElementById('login-error').style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = mode === 'login' ? 'Войти' : 'Зарегистрироваться';
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('btn-submit').click();
+  });
+
+  // Если уже залогинен — на dashboard
+  Auth.init().then(user => {
+    if (user) window.location.href = 'dashboard.html';
+  });
+</script>
+</body>
+</html>
