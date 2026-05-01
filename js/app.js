@@ -202,14 +202,14 @@ function renderUpcoming() {
 
   const monthNames = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
   el.innerHTML = upcoming.slice(0, 5).map(e => `
-    <div class="upcoming-item">
-      <div class="upcoming-date">
-        <div class="day">${e.date.getDate()}</div>
-        <div class="mon">${monthNames[e.date.getMonth()]}</div>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border)">
+      <div style="min-width:52px;text-align:center;flex-shrink:0">
+        <div style="font-size:16px;font-weight:500;color:#1D9E75;line-height:1">${e.date.getDate()}</div>
+        <div style="font-size:10px;color:#9ca3af">${monthNames[e.date.getMonth()]} ${e.date.getFullYear()}</div>
       </div>
-      <div class="upcoming-info">
-        <div class="title">${esc(e.vacName)} — ${esc(e.petName)}</div>
-        <div class="sub">${e.recent ? 'Сделана недавно' : e.status === 'next' ? 'Следующая прививка' : 'Запланировано'}</div>
+      <div style="min-width:0">
+        <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.vacName)} — ${esc(e.petName)}</div>
+        <div style="font-size:11px;color:#9ca3af;margin-top:2px">${e.recent ? 'Сделана недавно' : e.status === 'next' ? 'Следующая прививка' : 'Запланировано'}</div>
       </div>
     </div>`).join('');
 }
@@ -356,10 +356,11 @@ function badge(status) {
   return `<span class="badge ${cls}">${label}</span>`;
 }
 
-function fmtDate(d) {
+function fmtDate(d, showYear = true) {
   if (!d) return '—';
   const [y, m, day] = d.split('T')[0].split('-');
-  return `${parseInt(day)} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][m-1]} ${y}`;
+  const mon = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][m-1];
+  return showYear ? `${parseInt(day)} ${mon} ${y}` : `${parseInt(day)} ${mon}`;
 }
 
 function calcAge(b) {
