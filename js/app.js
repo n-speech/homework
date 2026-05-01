@@ -2,6 +2,7 @@ let pets = [];
 let editingPetId = null;
 let tempVaccines = [];
 
+
 document.addEventListener('DOMContentLoaded', async () => {
   const user = await Auth.init();
   if (!user) return;
