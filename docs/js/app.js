@@ -6,16 +6,9 @@ let tempVaccines   = [];
 // ── Инициализация ──────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   // Ждём пока dashboard.html инициализирует Auth
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 800));
 
   if (!Auth.getToken()) return;
-
-  document.getElementById('user-email').textContent = Auth.getEmail();
-
-  await loadPets();
-  setupTabs();
-  setupModal();
-});
 
   document.getElementById('user-email').textContent = Auth.getEmail();
 
@@ -59,10 +52,7 @@ function renderPets() {
   const container = document.getElementById('pets-container');
 
   if (!pets.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        Питомцев пока нет. Нажмите «+ Добавить питомца».
-      </div>`;
+    container.innerHTML = `<div class="empty-state">Питомцев пока нет. Нажмите «+ Добавить питомца».</div>`;
     return;
   }
 
@@ -70,14 +60,11 @@ function renderPets() {
 }
 
 function renderPetCard(pet) {
-  const icon      = petIcon(pet.type);
-  const ageStr    = pet.birth_date ? calcAge(pet.birth_date) + ' · ' : '';
-  const vaccines  = (pet.vaccines || []).map(renderVaccineRow).join('');
-  const vacBlock  = pet.vaccines?.length
-    ? `<div class="vaccine-list">
-         <div class="vaccine-section-title">ПРИВИВКИ</div>
-         ${vaccines}
-       </div>`
+  const icon     = petIcon(pet.type);
+  const ageStr   = pet.birth_date ? calcAge(pet.birth_date) + ' · ' : '';
+  const vaccines = (pet.vaccines || []).map(renderVaccineRow).join('');
+  const vacBlock = pet.vaccines?.length
+    ? `<div class="vaccine-list"><div class="vaccine-section-title">ПРИВИВКИ</div>${vaccines}</div>`
     : `<div class="no-vaccines">Прививки не добавлены</div>`;
 
   return `
@@ -130,14 +117,12 @@ function openEditModal(petId) {
 
 function renderModal(pet, isEdit) {
   document.getElementById('modal-title').textContent = isEdit ? 'Редактировать питомца' : 'Новый питомец';
-
-  document.getElementById('f-name').value       = pet.name       || '';
-  document.getElementById('f-type').value       = pet.type       || 'Собака';
-  document.getElementById('f-breed').value      = pet.breed      || '';
-  document.getElementById('f-birth').value      = pet.birth_date ? pet.birth_date.split('T')[0] : '';
-  document.getElementById('f-sex').value        = pet.sex        || 'Самец';
-  document.getElementById('f-notes').value      = pet.notes      || '';
-
+  document.getElementById('f-name').value  = pet.name       || '';
+  document.getElementById('f-type').value  = pet.type       || 'Собака';
+  document.getElementById('f-breed').value = pet.breed      || '';
+  document.getElementById('f-birth').value = pet.birth_date ? pet.birth_date.split('T')[0] : '';
+  document.getElementById('f-sex').value   = pet.sex        || 'Самец';
+  document.getElementById('f-notes').value = pet.notes      || '';
   renderVaccineInputs();
 }
 
@@ -160,9 +145,9 @@ function renderVaccineInputs() {
       <div class="form-field">
         <label class="form-label">Статус</label>
         <select class="form-input" id="vs-${i}">
-          <option value="done"  ${v.status==='done' ?'selected':''}>Сделана</option>
-          <option value="soon"  ${v.status==='soon' ?'selected':''}>Скоро</option>
-          <option value="next"  ${v.status==='next' ?'selected':''}>Следующая</option>
+          <option value="done" ${v.status==='done'?'selected':''}>Сделана</option>
+          <option value="soon" ${v.status==='soon'?'selected':''}>Скоро</option>
+          <option value="next" ${v.status==='next'?'selected':''}>Следующая</option>
         </select>
       </div>
       <button class="del-vac-btn" onclick="removeVaccine(${i})">✕</button>
@@ -171,10 +156,10 @@ function renderVaccineInputs() {
 
 function syncVaccines() {
   tempVaccines.forEach((v, i) => {
-    v.name       = document.getElementById(`vn-${i}`)?.value  || '';
-    v.date_done  = document.getElementById(`vd-${i}`)?.value  || null;
-    v.date_next  = document.getElementById(`vn2-${i}`)?.value || null;
-    v.status     = document.getElementById(`vs-${i}`)?.value  || 'done';
+    v.name      = document.getElementById(`vn-${i}`)?.value  || '';
+    v.date_done = document.getElementById(`vd-${i}`)?.value  || null;
+    v.date_next = document.getElementById(`vn2-${i}`)?.value || null;
+    v.status    = document.getElementById(`vs-${i}`)?.value  || 'done';
   });
 }
 
@@ -205,51 +190,25 @@ async function savePet() {
     notes:      document.getElementById('f-notes').value.trim()
   };
 
-  if (!petData.name) {
-    alert('Введите кличку питомца');
-    return;
-  }
+  if (!petData.name) { alert('Введите кличку питомца'); return; }
 
   const validVaccines = tempVaccines.filter(v => v.name.trim());
 
   setSaving(true);
   try {
     if (editingPetId) {
-      // Обновляем питомца
       const updated = await API.updatePet(editingPetId, petData);
-
-      // Синхронизируем прививки: удаляем старые, создаём новые
       const pet = pets.find(p => p.id === editingPetId);
-      const oldVaccines = pet.vaccines || [];
-
-      // Удаляем все старые прививки питомца
-      for (const v of oldVaccines) {
-        await API.deleteVaccine(v.id);
-      }
-      // Создаём актуальные
+      for (const v of (pet.vaccines || [])) await API.deleteVaccine(v.id);
       const newVaccines = [];
-      for (const v of validVaccines) {
-        const created = await API.createVaccine({ ...v, pet_id: editingPetId });
-        newVaccines.push(created);
-      }
-
-      // Обновляем локальное состояние
-      const idx = pets.findIndex(p => p.id === editingPetId);
-      pets[idx] = { ...updated, vaccines: newVaccines };
-
+      for (const v of validVaccines) newVaccines.push(await API.createVaccine({ ...v, pet_id: editingPetId }));
+      pets[pets.findIndex(p => p.id === editingPetId)] = { ...updated, vaccines: newVaccines };
     } else {
-      // Создаём нового питомца
       const created = await API.createPet(petData);
-
-      // Добавляем прививки
       const newVaccines = [];
-      for (const v of validVaccines) {
-        const vc = await API.createVaccine({ ...v, pet_id: created.id });
-        newVaccines.push(vc);
-      }
+      for (const v of validVaccines) newVaccines.push(await API.createVaccine({ ...v, pet_id: created.id }));
       pets.push({ ...created, vaccines: newVaccines });
     }
-
     closeModal();
     renderPets();
   } catch (err) {
@@ -275,23 +234,17 @@ window.confirmDeletePet = async function(id) {
 function openModal()  { document.getElementById('modal-overlay').style.display = 'flex'; }
 function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
 document.getElementById('btn-cancel').addEventListener('click', closeModal);
-window.openEditModal  = openEditModal;
+window.openEditModal = openEditModal;
 
 function setSaving(on) {
   document.getElementById('btn-save').textContent = on ? 'Сохранение...' : 'Сохранить';
   document.getElementById('btn-save').disabled = on;
 }
 
-function petIcon(type) {
-  return type === 'Кошка' ? '🐈' : type === 'Другое' ? '🐇' : '🐕';
-}
+function petIcon(type) { return type==='Кошка'?'🐈':type==='Другое'?'🐇':'🐕'; }
 
 function statusBadge(status) {
-  const map = {
-    done: ['badge-done', 'Сделана'],
-    soon: ['badge-soon', 'Скоро'],
-    next: ['badge-next', 'Следующая']
-  };
+  const map = { done:['badge-done','Сделана'], soon:['badge-soon','Скоро'], next:['badge-next','Следующая'] };
   const [cls, label] = map[status] || map.done;
   return `<span class="badge ${cls}">${label}</span>`;
 }
@@ -311,7 +264,7 @@ function calcAge(birth) {
 }
 
 function escHtml(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function showError(msg) {
