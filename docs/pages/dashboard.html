@@ -13,58 +13,87 @@
       font-size: 14px; color: #6b7280;
       z-index: 100;
     }
+    .not-logged {
+      min-height: 100vh; display: flex;
+      align-items: center; justify-content: center;
+      background: #f5f5f4; font-family: sans-serif;
+      display: none;
+    }
+    .not-logged-box { text-align: center; }
+    .not-logged-box .icon { font-size: 32px; margin-bottom: 16px; }
+    .not-logged-box h2 { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+    .not-logged-box p { font-size: 13px; color: #6b7280; margin-bottom: 24px; }
+    .not-logged-box a {
+      background: #1D9E75; color: white;
+      padding: 10px 24px; border-radius: 8px;
+      text-decoration: none; font-size: 14px;
+    }
   </style>
 </head>
 <body>
 
 <div id="loading-screen">Загрузка...</div>
 
-<header class="header" style="display:none" id="main-header">
-  <div class="logo"><span>🐾</span> ВетКлиника</div>
-  <div class="header-right">
-    <span id="user-email"></span>
-    <button class="btn-logout" onclick="Auth.logout()">Выйти</button>
+<div class="not-logged" id="not-logged">
+  <div class="not-logged-box">
+    <div class="icon">🐾</div>
+    <h2>Вы не вошли в систему</h2>
+    <p>Пожалуйста, войдите чтобы продолжить</p>
+    <a href="login.html">Войти</a>
   </div>
-</header>
+</div>
 
-<nav class="nav" style="display:none" id="main-nav">
-  <button class="nav-btn active" data-tab="pets">Мои питомцы</button>
-  <button class="nav-btn" data-tab="calendar">Календарь</button>
-  <button class="nav-btn" data-tab="info">Полезное</button>
-</nav>
+<div id="app" style="display:none">
+  <header class="header">
+    <div class="logo"><span>🐾</span> ВетКлиника</div>
+    <div class="header-right">
+      <span id="user-email"></span>
+      <button class="btn-logout" onclick="Auth.logout()">Выйти</button>
+    </div>
+  </header>
 
-<main class="content" style="display:none" id="main-content">
-  <div id="error-msg"></div>
-  <div class="section active" id="tab-pets">
-    <div class="section-header">
-      <div class="section-title">Мои питомцы</div>
-      <button class="btn-primary" id="btn-add-pet">+ Добавить питомца</button>
+  <nav class="nav">
+    <button class="nav-btn active" data-tab="pets">Мои питомцы</button>
+    <button class="nav-btn" data-tab="calendar">Календарь</button>
+    <button class="nav-btn" data-tab="info">Полезное</button>
+  </nav>
+
+  <main class="content">
+    <div id="error-msg"></div>
+
+    <div class="section active" id="tab-pets">
+      <div class="section-header">
+        <div class="section-title">Мои питомцы</div>
+        <button class="btn-primary" id="btn-add-pet">+ Добавить питомца</button>
+      </div>
+      <div id="pets-container"><div class="empty-state">Загрузка...</div></div>
     </div>
-    <div id="pets-container"><div class="empty-state">Загрузка...</div></div>
-  </div>
-  <div class="section" id="tab-calendar">
-    <div class="section-title" style="margin-bottom:18px">Календарь событий</div>
-    <div class="card">
-      <div style="font-size:15px;font-weight:500;margin-bottom:14px" id="cal-month-title"></div>
-      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px" id="cal-grid"></div>
+
+    <div class="section" id="tab-calendar">
+      <div class="section-title" style="margin-bottom:18px">Календарь событий</div>
+      <div class="card">
+        <div style="font-size:15px;font-weight:500;margin-bottom:14px" id="cal-month-title"></div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px" id="cal-grid"></div>
+      </div>
+      <div style="margin-top:18px">
+        <div style="font-size:11px;font-weight:500;color:#9ca3af;letter-spacing:.05em;margin-bottom:10px">БЛИЖАЙШИЕ ПРИВИВКИ</div>
+        <div id="upcoming-list"></div>
+      </div>
     </div>
-    <div style="margin-top:18px">
-      <div style="font-size:11px;font-weight:500;color:#9ca3af;letter-spacing:.05em;margin-bottom:10px">БЛИЖАЙШИЕ ПРИВИВКИ</div>
-      <div id="upcoming-list"></div>
+
+    <div class="section" id="tab-info">
+      <div class="section-title" style="margin-bottom:18px">Полезная информация</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+        <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=перевозка+собаки+документы','_blank')"><div style="font-size:22px;margin-bottom:8px">🧳</div><div style="font-size:13px;font-weight:500">Собака в дорогу</div><div style="font-size:12px;color:#6b7280;margin-top:4px">Чек-лист: документы, аптечка, еда</div></div>
+        <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=ветеринарный+паспорт','_blank')"><div style="font-size:22px;margin-bottom:8px">📋</div><div style="font-size:13px;font-weight:500">Документы</div><div style="font-size:12px;color:#6b7280;margin-top:4px">Ветпаспорт, справки, чипирование</div></div>
+        <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=подготовить+питомца+к+ветеринару','_blank')"><div style="font-size:22px;margin-bottom:8px">🏥</div><div style="font-size:13px;font-weight:500">Подготовка к визиту</div><div style="font-size:12px;color:#6b7280;margin-top:4px">Как снизить стресс питомца</div></div>
+        <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=питание+собаки+кошки','_blank')"><div style="font-size:22px;margin-bottom:8px">🥩</div><div style="font-size:13px;font-weight:500">Питание</div><div style="font-size:12px;color:#6b7280;margin-top:4px">Нормы, продукты, что нельзя</div></div>
+        <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=обработка+питомца+клещи+блохи','_blank')"><div style="font-size:22px;margin-bottom:8px">💊</div><div style="font-size:13px;font-weight:500">Паразиты</div><div style="font-size:12px;color:#6b7280;margin-top:4px">График обработки от блох и клещей</div></div>
+        <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=первая+помощь+питомцу','_blank')"><div style="font-size:22px;margin-bottom:8px">🩺</div><div style="font-size:13px;font-weight:500">Первая помощь</div><div style="font-size:12px;color:#6b7280;margin-top:4px">Что делать до визита к врачу</div></div>
+      </div>
     </div>
-  </div>
-  <div class="section" id="tab-info">
-    <div class="section-title" style="margin-bottom:18px">Полезная информация</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
-      <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=перевозка+собаки+документы','_blank')"><div style="font-size:22px;margin-bottom:8px">🧳</div><div style="font-size:13px;font-weight:500">Собака в дорогу</div><div style="font-size:12px;color:#6b7280;margin-top:4px">Чек-лист: документы, аптечка, еда</div></div>
-      <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=ветеринарный+паспорт','_blank')"><div style="font-size:22px;margin-bottom:8px">📋</div><div style="font-size:13px;font-weight:500">Документы</div><div style="font-size:12px;color:#6b7280;margin-top:4px">Ветпаспорт, справки, чипирование</div></div>
-      <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=подготовить+питомца+к+ветеринару','_blank')"><div style="font-size:22px;margin-bottom:8px">🏥</div><div style="font-size:13px;font-weight:500">Подготовка к визиту</div><div style="font-size:12px;color:#6b7280;margin-top:4px">Как снизить стресс питомца</div></div>
-      <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=питание+собаки+кошки','_blank')"><div style="font-size:22px;margin-bottom:8px">🥩</div><div style="font-size:13px;font-weight:500">Питание</div><div style="font-size:12px;color:#6b7280;margin-top:4px">Нормы, продукты, что нельзя</div></div>
-      <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=обработка+питомца+клещи+блохи','_blank')"><div style="font-size:22px;margin-bottom:8px">💊</div><div style="font-size:13px;font-weight:500">Паразиты</div><div style="font-size:12px;color:#6b7280;margin-top:4px">График обработки от блох и клещей</div></div>
-      <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=первая+помощь+питомцу','_blank')"><div style="font-size:22px;margin-bottom:8px">🩺</div><div style="font-size:13px;font-weight:500">Первая помощь</div><div style="font-size:12px;color:#6b7280;margin-top:4px">Что делать до визита к врачу</div></div>
-    </div>
-  </div>
-</main>
+  </main>
+</div>
 
 <div id="modal-overlay">
   <div class="modal">
@@ -99,6 +128,27 @@
   Auth.init().then(session => {
     document.getElementById('loading-screen').style.display = 'none';
     if (!session) {
-      document.body.innerHTML = `<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f5f4;font-family:sans-serif"><div style="text-align:center"><div style="font-size:32px;margin-bottom:16px">🐾</div><div style="font-size:16px;font-weight:500;margin-bottom:8px">Вы не вошли в систему</div><a href="login.html" style="background:#1D9E75;color:white;padding:10px 24px;border-radius:8px;text-decoration:none;font-size:14px;display:inline-block;margin-top:16px">Войти</a></div></div>`;
+      document.getElementById('not-logged').style.display = 'flex';
       return;
     }
+    document.getElementById('app').style.display = 'block';
+
+    // Календарь
+    const now = new Date(), year = now.getFullYear(), month = now.getMonth();
+    const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+    const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+    document.getElementById('cal-month-title').textContent = months[month] + ' ' + year;
+    const grid = document.getElementById('cal-grid');
+    days.forEach(d => { const el = document.createElement('div'); el.style.cssText='text-align:center;font-size:11px;color:#9ca3af;padding:4px'; el.textContent=d; grid.appendChild(el); });
+    const lastDay = new Date(year, month+1, 0).getDate();
+    let startDow = new Date(year, month, 1).getDay(); startDow = startDow===0?6:startDow-1;
+    for (let i=0; i<startDow; i++) { const el=document.createElement('div'); el.style.cssText='text-align:center;font-size:13px;padding:8px 4px;color:#d1d5db'; el.textContent=new Date(year,month,-startDow+i+1).getDate(); grid.appendChild(el); }
+    for (let d=1; d<=lastDay; d++) { const el=document.createElement('div'); el.style.cssText='text-align:center;font-size:13px;padding:8px 4px;border-radius:8px'; el.textContent=d; if(d===now.getDate()){el.style.background='#1D9E75';el.style.color='white';el.style.fontWeight='500';} grid.appendChild(el); }
+    document.getElementById('upcoming-list').innerHTML = '<div style="font-size:13px;color:#9ca3af">Ближайшие события появятся после добавления прививок.</div>';
+  }).catch(() => {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('not-logged').style.display = 'flex';
+  });
+</script>
+</body>
+</html>
