@@ -3,208 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Личный кабинет — ВетКлиника</title>
+  <title>Вход — ВетКлиника</title>
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
+<div class="login-page">
+  <div class="login-box">
+    <div class="login-logo"><span>🐾</span> ВетКлиника</div>
+    <div class="login-sub">Личный кабинет владельца питомца</div>
 
-<!-- ── Шапка ─────────────────────────────────────────── -->
-<header class="header">
-  <div class="logo"><span>🐾</span> ВетКлиника</div>
-  <div class="header-right">
-    <span id="user-email"></span>
-    <button class="btn-logout" onclick="Auth.logout()">Выйти</button>
-  </div>
-</header>
-
-<!-- ── Навигация ──────────────────────────────────────── -->
-<nav class="nav">
-  <button class="nav-btn active" data-tab="pets">Мои питомцы</button>
-  <button class="nav-btn" data-tab="calendar">Календарь</button>
-  <button class="nav-btn" data-tab="info">Полезное</button>
-</nav>
-
-<!-- ── Контент ────────────────────────────────────────── -->
-<main class="content">
-
-  <!-- Глобальная ошибка -->
-  <div id="error-msg"></div>
-
-  <!-- ── Питомцы ─────────────────────────────────────── -->
-  <div class="section active" id="tab-pets">
-    <div class="section-header">
-      <div class="section-title">Мои питомцы</div>
-      <button class="btn-primary" id="btn-add-pet">+ Добавить питомца</button>
+    <div class="login-tabs">
+      <button class="login-tab active" id="tab-login" onclick="switchTab('login')">Войти</button>
+      <button class="login-tab" id="tab-register" onclick="switchTab('register')">Регистрация</button>
     </div>
-    <div id="pets-container">
-      <div class="empty-state">Загрузка...</div>
-    </div>
-  </div>
 
-  <!-- ── Календарь ───────────────────────────────────── -->
-  <div class="section" id="tab-calendar">
-    <div class="section-title" style="margin-bottom:18px">Календарь событий</div>
-    <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <div style="font-size:15px;font-weight:500" id="cal-month-title"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px" id="cal-grid"></div>
-    </div>
-    <div style="margin-top:18px">
-      <div style="font-size:11px;font-weight:500;color:#9ca3af;letter-spacing:.05em;margin-bottom:10px">БЛИЖАЙШИЕ ПРИВИВКИ</div>
-      <div id="upcoming-list"></div>
-    </div>
-  </div>
+    <div id="login-error" class="login-error"></div>
+    <div id="login-success" class="login-success"></div>
 
-  <!-- ── Полезное ────────────────────────────────────── -->
-  <div class="section" id="tab-info">
-    <div class="section-title" style="margin-bottom:18px">Полезная информация</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
-      <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=перевозка+собаки+документы','_blank')">
-        <div style="font-size:22px;margin-bottom:8px">🧳</div>
-        <div style="font-size:13px;font-weight:500">Собака в дорогу</div>
-        <div style="font-size:12px;color:#6b7280;margin-top:4px;line-height:1.5">Чек-лист: документы, аптечка, еда и комфорт в пути</div>
-      </div>
-      <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=ветеринарный+паспорт+документы+питомец','_blank')">
-        <div style="font-size:22px;margin-bottom:8px">📋</div>
-        <div style="font-size:13px;font-weight:500">Документы</div>
-        <div style="font-size:12px;color:#6b7280;margin-top:4px;line-height:1.5">Ветпаспорт, справки, чипирование — всё по порядку</div>
-      </div>
-      <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=как+подготовить+питомца+к+ветеринару','_blank')">
-        <div style="font-size:22px;margin-bottom:8px">🏥</div>
-        <div style="font-size:13px;font-weight:500">Подготовка к визиту</div>
-        <div style="font-size:12px;color:#6b7280;margin-top:4px;line-height:1.5">Как снизить стресс питомца перед приёмом</div>
-      </div>
-      <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=питание+собаки+кошки+советы','_blank')">
-        <div style="font-size:22px;margin-bottom:8px">🥩</div>
-        <div style="font-size:13px;font-weight:500">Питание</div>
-        <div style="font-size:12px;color:#6b7280;margin-top:4px;line-height:1.5">Нормы, продукты, что нельзя давать</div>
-      </div>
-      <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=обработка+питомца+клещи+блохи+глисты','_blank')">
-        <div style="font-size:22px;margin-bottom:8px">💊</div>
-        <div style="font-size:13px;font-weight:500">Паразиты</div>
-        <div style="font-size:12px;color:#6b7280;margin-top:4px;line-height:1.5">График обработки от блох, клещей и глистов</div>
-      </div>
-      <div class="card" style="cursor:pointer" onclick="window.open('https://yandex.ru/search/?text=первая+помощь+питомцу+дома','_blank')">
-        <div style="font-size:22px;margin-bottom:8px">🩺</div>
-        <div style="font-size:13px;font-weight:500">Первая помощь</div>
-        <div style="font-size:12px;color:#6b7280;margin-top:4px;line-height:1.5">Что делать до визита к врачу</div>
-      </div>
-    </div>
-  </div>
-
-</main>
-
-<!-- ── Модальное окно питомца ─────────────────────────── -->
-<div id="modal-overlay">
-  <div class="modal">
-    <div class="modal-title" id="modal-title">Новый питомец</div>
-
-    <!-- Данные питомца -->
-    <div class="form-grid-2">
+    <div class="login-form">
       <div class="form-field">
-        <label class="form-label">Кличка *</label>
-        <input class="form-input" id="f-name" placeholder="Барон, Луна...">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="email" placeholder="ваш@email.com" autocomplete="email">
       </div>
       <div class="form-field">
-        <label class="form-label">Вид *</label>
-        <select class="form-input" id="f-type">
-          <option>Собака</option>
-          <option>Кошка</option>
-          <option>Другое</option>
-        </select>
+        <label class="form-label">Пароль</label>
+        <input class="form-input" type="password" id="password" placeholder="Минимум 6 символов" autocomplete="current-password">
       </div>
-    </div>
-    <div class="form-grid-3">
-      <div class="form-field">
-        <label class="form-label">Порода</label>
-        <input class="form-input" id="f-breed" placeholder="Лабрадор...">
-      </div>
-      <div class="form-field">
-        <label class="form-label">Дата рождения</label>
-        <input class="form-input" type="date" id="f-birth">
-      </div>
-      <div class="form-field">
-        <label class="form-label">Пол</label>
-        <select class="form-input" id="f-sex">
-          <option>Самец</option>
-          <option>Самка</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-field">
-      <label class="form-label">Заметки</label>
-      <input class="form-input" id="f-notes" placeholder="Аллергии, особенности...">
-    </div>
-
-    <hr class="section-divider">
-    <div class="vaccines-label">ПРИВИВКИ</div>
-    <div id="vaccine-inputs"></div>
-    <button class="add-vaccine-btn" onclick="addVaccine()">+ Добавить прививку</button>
-
-    <div class="modal-actions">
-      <button class="btn-cancel" id="btn-cancel">Отмена</button>
-      <button class="btn-save" id="btn-save">Сохранить</button>
+      <button class="btn-login" id="btn-submit">Войти</button>
     </div>
   </div>
 </div>
 
-<!-- ── Скрипты ────────────────────────────────────────── -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../js/config.js"></script>
 <script src="../js/auth.js"></script>
-<script src="../js/api.js"></script>
-<script src="../js/app.js"></script>
-
-<!-- Рендер календаря (не требует данных с сервера) -->
 <script>
-  (function renderCalendar() {
-    const now    = new Date();
-    const year   = now.getFullYear();
-    const month  = now.getMonth();
-    const months = ['Январь','Февраль','Март','Апрель','Май','Июнь',
-                    'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-    const days   = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  let mode = 'login';
 
-    document.getElementById('cal-month-title').textContent = months[month] + ' ' + year;
+  function switchTab(tab) {
+    mode = tab;
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+    document.getElementById('btn-submit').textContent = tab === 'login' ? 'Войти' : 'Зарегистрироваться';
+    hideMessages();
+  }
 
-    const grid = document.getElementById('cal-grid');
-    days.forEach(d => {
-      const el = document.createElement('div');
-      el.style.cssText = 'text-align:center;font-size:11px;color:#9ca3af;padding:4px';
-      el.textContent = d;
-      grid.appendChild(el);
-    });
+  function showError(msg) {
+    const el = document.getElementById('login-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('login-success').style.display = 'none';
+  }
 
-    const first   = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0).getDate();
-    let startDow  = first.getDay(); // 0=Sun
-    startDow = startDow === 0 ? 6 : startDow - 1; // Mon=0
+  function showSuccess(msg) {
+    const el = document.getElementById('login-success');
+    el.textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('login-error').style.display = 'none';
+  }
 
-    for (let i = 0; i < startDow; i++) {
-      const el = document.createElement('div');
-      el.style.cssText = 'text-align:center;font-size:13px;padding:8px 4px;color:#d1d5db';
-      el.textContent = new Date(year, month, -startDow + i + 1).getDate();
-      grid.appendChild(el);
-    }
+  function hideMessages() {
+    document.getElementById('login-error').style.display = 'none';
+    document.getElementById('login-success').style.display = 'none';
+  }
 
-    for (let d = 1; d <= lastDay; d++) {
-      const el = document.createElement('div');
-      el.style.cssText = 'text-align:center;font-size:13px;padding:8px 4px;border-radius:8px';
-      el.textContent = d;
-      if (d === now.getDate()) {
-        el.style.background = '#1D9E75';
-        el.style.color = 'white';
-        el.style.fontWeight = '500';
+  document.getElementById('btn-submit').addEventListener('click', async () => {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!email || !password) { showError('Заполните все поля'); return; }
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.textContent = 'Подождите...';
+    hideMessages();
+
+    try {
+      if (mode === 'login') {
+        await Auth.login(email, password);
+        window.location.href = 'dashboard.html';
+      } else {
+        await Auth.register(email, password);
+        showSuccess('Аккаунт создан! Проверьте email для подтверждения, затем войдите.');
+        switchTab('login');
       }
-      grid.appendChild(el);
+    } catch (err) {
+      const msg = err.message.includes('Invalid login credentials')
+        ? 'Неверный email или пароль'
+        : err.message.includes('already registered')
+        ? 'Этот email уже зарегистрирован'
+        : err.message;
+      showError(msg);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = mode === 'login' ? 'Войти' : 'Зарегистрироваться';
     }
+  });
 
-    // Upcoming vaccines (заглушка — в продакшне строится из pets)
-    const upcomingEl = document.getElementById('upcoming-list');
-    upcomingEl.innerHTML = '<div style="font-size:13px;color:#9ca3af">Ближайшие события появятся после добавления прививок с датой «Следующая».</div>';
-  })();
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('btn-submit').click();
+  });
 </script>
-
 </body>
 </html>
