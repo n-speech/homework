@@ -5,11 +5,17 @@ let tempVaccines   = [];
 
 // ── Инициализация ──────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  const session = await Auth.init();
-  if (!session) {
-    window.location.href = 'login.html';
-    return;
-  }
+  // Ждём пока dashboard.html инициализирует Auth
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  if (!Auth.getToken()) return;
+
+  document.getElementById('user-email').textContent = Auth.getEmail();
+
+  await loadPets();
+  setupTabs();
+  setupModal();
+});
 
   document.getElementById('user-email').textContent = Auth.getEmail();
 
