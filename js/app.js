@@ -2,7 +2,6 @@ let pets = [];
 let editingPetId = null;
 let tempVaccines = [];
 
-
 document.addEventListener('DOMContentLoaded', async () => {
   const user = await Auth.init();
   if (!user) return;
@@ -16,6 +15,7 @@ async function loadPets() {
   try {
     pets = await API.getPets();
     renderPets();
+    renderCalendar();
   } catch (err) {
     showError('Ошибка загрузки: ' + err.message);
   }
@@ -82,6 +82,139 @@ function renderPetCard(pet) {
     </div>`;
 }
 
+// ── Календарь ─────────────────────────────────────────────
+function renderCalendar() {
+  const now   = new Date();
+  const year  = now.getFullYear();
+  const month = now.getMonth();
+
+  const months = ['Январь','Февраль','Март','Апрель','Май','Июнь',
+                  'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  document.getElementById('cal-month-title').textContent = months[month] + ' ' + year;
+
+  // Собираем все даты прививок в этом месяце
+  const eventDays = {};
+  pets.forEach(pet => {
+    (pet.vaccines || []).forEach(v => {
+      // Проверяем date_done
+      if (v.date_done) {
+        const d = new Date(v.date_done);
+        if (d.getFullYear() === year && d.getMonth() === month) {
+          const day = d.getDate();
+          if (!eventDays[day]) eventDays[day] = [];
+          eventDays[day].push({ pet: pet.name, vaccine: v.name, type: 'done' });
+        }
+      }
+      // Проверяем date_next
+      if (v.date_next) {
+        const d = new Date(v.date_next);
+        if (d.getFullYear() === year && d.getMonth() === month) {
+          const day = d.getDate();
+          if (!eventDays[day]) eventDays[day] = [];
+          eventDays[day].push({ pet: pet.name, vaccine: v.name, type: 'next' });
+        }
+      }
+    });
+  });
+
+  // Рендерим сетку
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => {
+    const el = document.createElement('div');
+    el.style.cssText = 'text-align:center;font-size:11px;color:#9ca3af;padding:4px';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  let startDow = new Date(year, month, 1).getDay();
+  startDow = startDow === 0 ? 6 : startDow - 1;
+
+  for (let i = 0; i < startDow; i++) {
+    const el = document.createElement('div');
+    el.style.cssText = 'text-align:center;font-size:13px;padding:8px 4px;color:#d1d5db';
+    el.textContent = new Date(year, month, -startDow + i + 1).getDate();
+    grid.appendChild(el);
+  }
+
+  for (let d = 1; d <= lastDay; d++) {
+    const el = document.createElement('div');
+    el.style.cssText = 'text-align:center;font-size:13px;padding:6px 4px;border-radius:8px;position:relative;cursor:default';
+    el.textContent = d;
+
+    if (d === now.getDate()) {
+      el.style.background = '#1D9E75';
+      el.style.color = 'white';
+      el.style.fontWeight = '500';
+    }
+
+    if (eventDays[d]) {
+      const dot = document.createElement('div');
+      dot.style.cssText = 'width:5px;height:5px;border-radius:50%;background:#f59e0b;margin:2px auto 0';
+      if (d === now.getDate()) dot.style.background = 'white';
+      el.appendChild(dot);
+      el.title = eventDays[d].map(e => e.pet + ': ' + e.vaccine).join('\n');
+      el.style.cursor = 'pointer';
+      if (d !== now.getDate()) {
+        el.style.background = '#FEF3C7';
+        el.style.color = '#92400E';
+      }
+    }
+
+    grid.appendChild(el);
+  }
+
+  // Список ближайших прививок
+  renderUpcoming();
+}
+
+function renderUpcoming() {
+  const now = new Date();
+  const upcoming = [];
+
+  pets.forEach(pet => {
+    (pet.vaccines || []).forEach(v => {
+      if (v.date_next) {
+        const d = new Date(v.date_next);
+        if (d >= now) {
+          upcoming.push({ date: d, petName: pet.name, vacName: v.name, status: v.status });
+        }
+      }
+      if (v.date_done) {
+        const d = new Date(v.date_done);
+        const diff = (now - d) / (1000 * 60 * 60 * 24);
+        if (diff <= 30 && diff >= 0) {
+          upcoming.push({ date: d, petName: pet.name, vacName: v.name, status: 'done', recent: true });
+        }
+      }
+    });
+  });
+
+  upcoming.sort((a, b) => a.date - b.date);
+
+  const el = document.getElementById('upcoming-list');
+  if (!upcoming.length) {
+    el.innerHTML = '<div style="font-size:13px;color:#9ca3af">Ближайших событий нет.</div>';
+    return;
+  }
+
+  const monthNames = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  el.innerHTML = upcoming.slice(0, 5).map(e => `
+    <div class="upcoming-item">
+      <div class="upcoming-date">
+        <div class="day">${e.date.getDate()}</div>
+        <div class="mon">${monthNames[e.date.getMonth()]}</div>
+      </div>
+      <div class="upcoming-info">
+        <div class="title">${esc(e.vacName)} — ${esc(e.petName)}</div>
+        <div class="sub">${e.recent ? 'Сделана недавно' : e.status === 'next' ? 'Следующая прививка' : 'Запланировано'}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Модалки ───────────────────────────────────────────────
 function openCreateModal() {
   editingPetId = null;
   tempVaccines = [];
@@ -188,6 +321,7 @@ async function savePet() {
     }
     closeModal();
     renderPets();
+    renderCalendar();
   } catch (err) {
     showError(err.message);
   } finally {
@@ -201,6 +335,7 @@ window.deletePet = async function(id) {
     await API.deletePet(id);
     pets = pets.filter(p => p.id !== id);
     renderPets();
+    renderCalendar();
   } catch (err) {
     showError(err.message);
   }
