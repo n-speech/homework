@@ -302,10 +302,10 @@ body {
 .login-page {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   background: var(--bg);
-  padding: 16px;
+  padding: 24px 16px;
 }
 .login-box {
   background: var(--bg-card);
