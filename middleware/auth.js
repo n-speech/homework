@@ -2,7 +2,13 @@ const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.SUPABASE_SERVICE_KEY,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
 );
 
 async function requireAuth(req, res, next) {
@@ -14,15 +20,10 @@ async function requireAuth(req, res, next) {
 
   const token = authHeader.split(' ')[1];
 
-  console.log('Token received:', token.substring(0, 50) + '...');
-  console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
-  console.log('SERVICE_KEY starts with:', process.env.SUPABASE_SERVICE_KEY?.substring(0, 20));
-
   try {
     const { data, error } = await supabase.auth.getUser(token);
-    console.log('Supabase response:', JSON.stringify({ data, error }));
-    
     if (error || !data?.user) {
+      console.log('Auth error:', error?.message);
       return res.status(401).json({ error: 'Неверный или истёкший токен' });
     }
     req.userId = data.user.id;
