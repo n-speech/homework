@@ -1,5 +1,4 @@
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-
+var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 const Auth = {
   user: null,
