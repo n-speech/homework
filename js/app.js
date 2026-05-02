@@ -45,22 +45,22 @@ function renderPetCard(pet) {
   const icon = pet.type === 'Кошка' ? '🐈' : pet.type === 'Другое' ? '🐇' : '🐕';
   const age  = pet.birth_date ? calcAge(pet.birth_date) + ' · ' : '';
 
-  const vacRows = (pet.vaccines || [])
-    .slice()
-    .sort((a, b) => new Date(b.date_done || 0) - new Date(a.date_done || 0))
-    .map(v => `
-      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;padding:6px 0;border-bottom:0.5px solid var(--border);align-items:center">
-        <div style="font-size:13px;font-weight:500">${esc(v.name)}</div>
-        <div style="display:flex;align-items:center;gap:4px">
-          ${v.date_done ? `<span style="color:#1D9E75;font-size:14px">✓</span><span style="font-size:12px;color:#374151">${fmtDate(v.date_done)}</span>` : ''}
-        </div>
-        <div>${v.date_next ? `<span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span>` : ''}</div>
+ const vacRows = (pet.vaccines || [])
+  .slice()
+  .sort((a, b) => new Date(b.date_done || 0) - new Date(a.date_done || 0))
+  .map(v => `
+    <div class="vac-row-desktop">
+      <div style="font-size:13px;font-weight:500">${esc(v.name)}</div>
+      <div style="display:flex;align-items:center;gap:4px">
+        ${v.date_done ? `<span style="color:#1D9E75">✓</span><span style="font-size:12px;color:#374151">${fmtDate(v.date_done)}</span>` : ''}
       </div>
-      <div class="vac-mobile" style="display:none;padding:6px 0;border-bottom:0.5px solid var(--border)">
-        <div style="font-size:13px;font-weight:500;margin-bottom:4px">${esc(v.name)}</div>
-        ${v.date_done ? `<div style="font-size:12px;color:#374151;margin-bottom:2px"><span style="color:#1D9E75">✓</span> ${fmtDate(v.date_done)}</div>` : ''}
-        ${v.date_next ? `<div><span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span></div>` : ''}
-      </div>`).join('');
+      <div>${v.date_next ? `<span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span>` : ''}</div>
+    </div>
+    <div class="vac-row-mobile">
+      <div class="vac-mobile-name">${esc(v.name)}</div>
+      ${v.date_done ? `<div class="vac-mobile-done"><span style="color:#1D9E75">✓</span> ${fmtDate(v.date_done)}</div>` : ''}
+      ${v.date_next ? `<div class="vac-mobile-next"><span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span></div>` : ''}
+    </div>`).join('');
 
   const vacBlock = pet.vaccines?.length
     ? `<div class="vaccine-list"><div class="vaccine-section-title">ПРИВИВКИ</div>${vacRows}</div>`
