@@ -54,13 +54,11 @@ function renderPetCard(pet) {
   const icon    = pet.type === 'Кошка' ? '🐈' : pet.type === 'Другое' ? '🐇' : '🐕';
   const age     = pet.birth_date ? calcAge(pet.birth_date) + ' · ' : '';
  const vacRows = (pet.vaccines || []).map(v => `
-    <div class="vaccine-item">
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <span style="font-weight:500">${esc(v.name)}</span>
-        ${badge(v.status)}
-        ${v.date_done ? `<span class="badge" style="background:#f3f4f6;color:#374151">${fmtDate(v.date_done)}</span>` : ''}
-        ${v.date_next ? `<span class="badge badge-next">Следующая: ${fmtDate(v.date_next)}</span>` : ''}
-      </div>
+    <div class="vaccine-item" style="display:grid;grid-template-columns:1fr auto auto auto;align-items:center;gap:8px">
+      <span style="font-weight:500">${esc(v.name)}</span>
+      ${badge(v.status)}
+      ${v.date_done ? `<span class="badge" style="background:#f3f4f6;color:#374151">${fmtDate(v.date_done)}</span>` : '<span></span>'}
+      ${v.date_next ? `<span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span>` : '<span></span>'}
     </div>`).join('');
   
   const vacBlock = pet.vaccines?.length
