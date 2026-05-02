@@ -58,10 +58,11 @@ function renderPetCard(pet) {
     .slice()
     .sort((a, b) => new Date(b.date_done || 0) - new Date(a.date_done || 0))
     .map(v => `
-    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;padding:6px 0;border-bottom:0.5px solid var(--border);align-items:center">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;padding:6px 0;border-bottom:0.5px solid var(--border);align-items:center">
       <div style="font-size:13px;font-weight:500">${esc(v.name)}</div>
-      <div>${badge(v.status)}</div>
-      <div>${v.date_done ? `<span class="badge" style="background:#f3f4f6;color:#374151">${fmtDate(v.date_done)}</span>` : ''}</div>
+      <div style="display:flex;align-items:center;gap:4px">
+        ${v.date_done ? `<span style="color:#1D9E75;font-size:14px">✓</span><span style="font-size:12px;color:#374151">${fmtDate(v.date_done)}</span>` : ''}
+      </div>
       <div>${v.date_next ? `<span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span>` : ''}</div>
     </div>`).join('');
   
