@@ -54,15 +54,15 @@ function renderPetCard(pet) {
   const icon    = pet.type === 'Кошка' ? '🐈' : pet.type === 'Другое' ? '🐇' : '🐕';
   const age     = pet.birth_date ? calcAge(pet.birth_date) + ' · ' : '';
 
-  const vacRows = (pet.vaccines || [])
+ const vacRows = (pet.vaccines || [])
     .slice()
     .sort((a, b) => new Date(b.date_done || 0) - new Date(a.date_done || 0))
     .map(v => `
-    <div class="vaccine-item" style="display:grid;grid-template-columns:1fr auto auto auto;align-items:center;gap:8px;text-align:left">
-      <span style="font-weight:500;text-align:left">${esc(v.name)}</span>
-      <span style="text-align:left">${badge(v.status)}</span>
-      ${v.date_done ? `<span class="badge" style="background:#f3f4f6;color:#374151;text-align:left">${fmtDate(v.date_done)}</span>` : '<span></span>'}
-      ${v.date_next ? `<span class="badge badge-next;text-align:left">↻ ${fmtDate(v.date_next)}</span>` : '<span></span>'}
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;padding:6px 0;border-bottom:0.5px solid var(--border);align-items:center">
+      <div style="font-size:13px;font-weight:500">${esc(v.name)}</div>
+      <div>${badge(v.status)}</div>
+      <div>${v.date_done ? `<span class="badge" style="background:#f3f4f6;color:#374151">${fmtDate(v.date_done)}</span>` : ''}</div>
+      <div>${v.date_next ? `<span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span>` : ''}</div>
     </div>`).join('');
   
   const vacBlock = pet.vaccines?.length
