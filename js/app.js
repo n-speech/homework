@@ -65,7 +65,7 @@ function renderPetCard(pet) {
     </div>`).join('');
 
   const vacBlock = pet.vaccines?.length
-    ? `<div class="vaccine-list"><div class="vaccine-section-title">ПРИВИВКИ</div>${vacRows}</div>`
+    ? `<div class="vaccine-list"><div class="vaccine-section-title">БЛИЖАЙШАЯ ПРОФИЛАКТИКА</div>${vacRows}</div>`
     : '<div class="no-vaccines">Прививки не добавлены</div>';
 
   return `
