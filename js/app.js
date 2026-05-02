@@ -58,8 +58,10 @@ function renderPetCard(pet) {
     </div>
     <div class="vac-row-mobile">
       <div class="vac-mobile-name">${esc(v.name)}</div>
-      ${v.date_done ? `<div class="vac-mobile-done"><span style="color:#1D9E75">✓</span> ${fmtDate(v.date_done)}</div>` : ''}
-      ${v.date_next ? `<div class="vac-mobile-next"><span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span></div>` : ''}
+      <div class="vac-mobile-dates">
+        ${v.date_done ? `<span class="vac-mobile-done"><span style="color:#1D9E75">✓</span> ${fmtDate(v.date_done)}</span>` : ''}
+        ${v.date_next ? `<span class="badge badge-next" style="font-size:14px;padding:4px 12px">↻ ${fmtDate(v.date_next)}</span>` : ''}
+      </div>
     </div>`).join('');
 
   const vacBlock = pet.vaccines?.length
