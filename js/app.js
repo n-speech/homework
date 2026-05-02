@@ -55,10 +55,13 @@ function renderPetCard(pet) {
   const age     = pet.birth_date ? calcAge(pet.birth_date) + ' · ' : '';
   const vacRows = (pet.vaccines || []).map(v => `
     <div class="vaccine-item">
-      <span>${esc(v.name)}</span>
-      <div class="vaccine-meta">
-        <span class="vac-date">${fmtDate(v.date_done)}${v.date_next ? ' → ' + fmtDate(v.date_next) : ''}</span>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-weight:500">${esc(v.name)}</span>
         ${badge(v.status)}
+      </div>
+      <div style="font-size:12px;color:#6b7280;margin-top:4px;display:flex;flex-wrap:wrap;gap:12px">
+        ${v.date_done ? `<span>Сделана: <b style="color:#1a1a1a">${fmtDate(v.date_done)}</b></span>` : ''}
+        ${v.date_next ? `<span>Следующая: <b style="color:#1D9E75">${fmtDate(v.date_next)}</b></span>` : ''}
       </div>
     </div>`).join('');
   const vacBlock = pet.vaccines?.length
