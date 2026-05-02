@@ -152,11 +152,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
   </header>
   <nav class="nav">
-    <a class="nav-btn active" href="dashboard.html">Мои питомцы</a>
-    <a class="nav-btn" href="calendar.html">Календарь</a>
-    <a class="nav-btn" href="info.html">Полезное</a>
-    <button class="btn-primary" id="btn-add-pet" style="margin:6px 0 6px auto">+ Добавить питомца</button>
-  </nav>
+  <a class="nav-btn active" href="dashboard.html">Мои питомцы</a>
+  <a class="nav-btn" href="calendar.html">Календарь</a>
+  <a class="nav-btn" href="info.html">Полезное</a>
+  <button class="btn-primary" id="btn-add-pet" style="margin:6px 0 6px auto">+ Добавить питомца</button>
+</nav>
+
+<!-- Мобильное меню -->
+<div class="mobile-nav" id="mobile-nav">
+  <button class="burger" id="burger-btn" onclick="toggleMenu()">☰</button>
+  <div class="burger-title">ВетКлиника 🐾</div>
+  <button class="btn-primary" id="btn-add-pet-m" style="margin-left:auto;padding:7px 12px;font-size:12px">+</button>
+</div>
+<div class="burger-menu" id="burger-menu">
+  <a href="dashboard.html">Мои питомцы</a>
+  <a href="calendar.html">Календарь</a>
+  <a href="info.html">Полезное</a>
+</div>
   <main class="content">
     <div id="error-msg"></div>
     <div id="pets-container"><div class="empty-state">Загрузка...</div></div>
