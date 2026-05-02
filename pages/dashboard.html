@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Личный кабинет —  ВетКлиника</title>
+  <title>Личный кабинет — ВетКлиника</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
     #loading-screen {
@@ -27,26 +27,27 @@
   </header>
 
   <nav class="nav">
-  <button class="nav-btn active" data-tab="pets">Мои питомцы</button>
-  <button class="nav-btn" data-tab="calendar">Календарь</button>
-  <button class="nav-btn" data-tab="info">Полезное</button>
-  <button class="btn-primary" id="btn-add-pet" style="margin:6px 0 6px auto">+ Добавить питомца</button>
-</nav>
+    <button class="nav-btn active" data-tab="pets">Мои питомцы</button>
+    <button class="nav-btn" data-tab="calendar">Календарь</button>
+    <button class="nav-btn" data-tab="info">Полезное</button>
+    <button class="btn-primary" id="btn-add-pet" style="margin:6px 0 6px auto">+ Добавить питомца</button>
+  </nav>
 
   <main class="content">
     <div id="error-msg"></div>
 
-    
+    <div class="section active" id="tab-pets">
+      <div id="pets-container"><div class="empty-state">Загрузка...</div></div>
+    </div>
 
     <div class="section" id="tab-calendar">
       <div class="section-title" style="margin-bottom:18px">Календарь событий</div>
       <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-  <button onclick="calPrev()" style="border:0.5px solid #e5e7eb;background:none;border-radius:8px;padding:4px 12px;cursor:pointer;font-size:16px">‹</button>
-  <div style="font-size:15px;font-weight:500" id="cal-month-title"></div>
-  <button onclick="calNext()" style="border:0.5px solid #e5e7eb;background:none;border-radius:8px;padding:4px 12px;cursor:pointer;font-size:16px">›</button>
-</div>
-        
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <button onclick="calPrev()" style="border:0.5px solid #e5e7eb;background:none;border-radius:8px;padding:4px 12px;cursor:pointer;font-size:16px">‹</button>
+          <div style="font-size:15px;font-weight:500" id="cal-month-title"></div>
+          <button onclick="calNext()" style="border:0.5px solid #e5e7eb;background:none;border-radius:8px;padding:4px 12px;cursor:pointer;font-size:16px">›</button>
+        </div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px" id="cal-grid"></div>
       </div>
       <div style="margin-top:18px">
@@ -107,34 +108,6 @@
       return;
     }
     document.getElementById('app').style.display = 'block';
-
-    // Календарь
-    const now = new Date(), year = now.getFullYear(), month = now.getMonth();
-    const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-    document.getElementById('cal-month-title').textContent = months[month] + ' ' + year;
-    const grid = document.getElementById('cal-grid');
-    ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => {
-      const el = document.createElement('div');
-      el.style.cssText = 'text-align:center;font-size:11px;color:#9ca3af;padding:4px';
-      el.textContent = d; grid.appendChild(el);
-    });
-    const lastDay = new Date(year, month+1, 0).getDate();
-    let startDow = new Date(year, month, 1).getDay();
-    startDow = startDow === 0 ? 6 : startDow - 1;
-    for (let i = 0; i < startDow; i++) {
-      const el = document.createElement('div');
-      el.style.cssText = 'text-align:center;font-size:13px;padding:8px 4px;color:#d1d5db';
-      el.textContent = new Date(year, month, -startDow+i+1).getDate();
-      grid.appendChild(el);
-    }
-    for (let d = 1; d <= lastDay; d++) {
-      const el = document.createElement('div');
-      el.style.cssText = 'text-align:center;font-size:13px;padding:8px 4px;border-radius:8px';
-      el.textContent = d;
-      if (d === now.getDate()) { el.style.background='#1D9E75'; el.style.color='white'; el.style.fontWeight='500'; }
-      grid.appendChild(el);
-    }
-    document.getElementById('upcoming-list').innerHTML = '<div style="font-size:13px;color:#9ca3af">Ближайшие события появятся после добавления прививок.</div>';
   });
 </script>
 </body>
