@@ -47,7 +47,7 @@ function renderPetCard(pet) {
 
  const vacRows = (pet.vaccines || [])
   .slice()
-  .sort((a, b) => new Date(b.date_done || 0) - new Date(a.date_done || 0))
+ .sort((a, b) => new Date(a.date_next || '9999') - new Date(b.date_next || '9999'))
   .map(v => `
     <div class="vac-row-desktop">
       <div style="font-size:13px;font-weight:500">${esc(v.name)}</div>
