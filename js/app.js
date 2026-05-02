@@ -45,6 +45,11 @@ function renderPetCard(pet) {
   const icon = pet.type === 'Кошка' ? '🐈' : pet.type === 'Другое' ? '🐇' : '🐕';
   const age  = pet.birth_date ? calcAge(pet.birth_date) + ' · ' : '';
 
+  // Иконка питомца — фото или эмодзи
+  const petIconHtml = pet.photo_url
+    ? `<div class="pet-icon pet-icon-photo" style="background-image:url('${pet.photo_url}')"></div>`
+    : `<div class="pet-icon">${icon}</div>`;
+
   const vacRows = (pet.vaccines || [])
     .slice()
     .sort((a, b) => new Date(a.date_next || '9999') - new Date(b.date_next || '9999'))
@@ -60,7 +65,7 @@ function renderPetCard(pet) {
         <div class="vac-mobile-name">${esc(v.name)}</div>
         <div class="vac-mobile-dates">
           ${v.date_done ? `<span class="vac-mobile-done"><span style="color:#1D9E75;font-size:14px;line-height:1">✓</span> ${fmtDate(v.date_done)}</span>` : ''}
-          ${v.date_next ? `<span class="badge badge-next" style="font-size:14px;padding:3px 9px"><span style="font-size:14px;line-height:1">↻</span> ${fmtDate(v.date_next)}</span>` : ''}
+          ${v.date_next ? `<span class="badge badge-next vac-badge-mobile"><span class="vac-arrow">↻</span> ${fmtDate(v.date_next)}</span>` : ''}
         </div>
       </div>`).join('');
 
@@ -71,7 +76,7 @@ function renderPetCard(pet) {
   return `
     <div class="card" id="pet-${pet.id}">
       <div class="pet-row">
-        <div class="pet-icon">${icon}</div>
+        ${petIconHtml}
         <div class="pet-info">
           <div class="pet-name">${esc(pet.name)}</div>
           <div class="pet-meta">${esc(pet.breed || pet.type)} · ${age}${pet.sex || ''}</div>
@@ -89,8 +94,10 @@ function renderPetCard(pet) {
 function openCreateModal() {
   editingPetId = null;
   tempVaccines = [];
-  fillForm({ name:'', type:'Собака', breed:'', birth_date:'', sex:'Самец', notes:'' });
+  fillForm({ name:'', type:'Собака', breed:'', birth_date:'', sex:'Самец', notes:'', photo_url:'' });
   document.getElementById('modal-title').textContent = 'Новый питомец';
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('photo-input').value = '';
   openModal();
 }
 
@@ -102,6 +109,16 @@ window.openEditModal = function(id) {
   tempVaccines = JSON.parse(JSON.stringify(pet.vaccines || []));
   fillForm(pet);
   document.getElementById('modal-title').textContent = 'Редактировать питомца';
+
+  // Показать текущее фото если есть
+  const preview = document.getElementById('photo-preview');
+  if (pet.photo_url) {
+    preview.src = pet.photo_url;
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+  document.getElementById('photo-input').value = '';
   openModal();
 };
 
@@ -114,6 +131,15 @@ function fillForm(pet) {
   document.getElementById('f-notes').value = pet.notes || '';
   renderVaccineInputs();
 }
+
+// ── Предпросмотр фото ──────────────────────────────────────
+window.previewPhoto = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const preview = document.getElementById('photo-preview');
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+};
 
 function renderVaccineInputs() {
   document.getElementById('vaccine-inputs').innerHTML = tempVaccines.map((v, i) => `
@@ -176,6 +202,7 @@ async function savePet() {
   };
   if (!petData.name) { alert('Введите кличку'); return; }
   const validVacs = tempVaccines.filter(v => v.name.trim());
+  const photoFile = document.getElementById('photo-input').files[0];
 
   setSaving(true);
   try {
@@ -185,12 +212,16 @@ async function savePet() {
       for (const v of (pet.vaccines || [])) await API.deleteVaccine(v.id);
       const newVacs = [];
       for (const v of validVacs) newVacs.push(await API.createVaccine({ ...v, pet_id: editingPetId }));
-      pets[pets.findIndex(p => p.id === editingPetId)] = { ...updated, vaccines: newVacs };
+      let photoUrl = pet.photo_url || null;
+      if (photoFile) photoUrl = await API.uploadPhoto(editingPetId, photoFile);
+      pets[pets.findIndex(p => p.id === editingPetId)] = { ...updated, vaccines: newVacs, photo_url: photoUrl };
     } else {
       const created = await API.createPet(petData);
       const newVacs = [];
       for (const v of validVacs) newVacs.push(await API.createVaccine({ ...v, pet_id: created.id }));
-      pets.push({ ...created, vaccines: newVacs });
+      let photoUrl = null;
+      if (photoFile) photoUrl = await API.uploadPhoto(created.id, photoFile);
+      pets.push({ ...created, vaccines: newVacs, photo_url: photoUrl });
     }
     closeModal();
     renderPets();
@@ -205,6 +236,8 @@ async function savePet() {
 window.deletePet = async function(id) {
   if (!confirm('Удалить питомца и все прививки?')) return;
   try {
+    const pet = pets.find(p => p.id === id);
+    if (pet?.photo_url) await API.deletePhoto(id, pet.photo_url);
     await API.deletePet(id);
     pets = pets.filter(p => p.id !== id);
     renderPets();
