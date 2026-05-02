@@ -2,36 +2,26 @@ let pets = [];
 let editingPetId = null;
 let tempVaccines = [];
 
+// ── Инициализация ──────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   const user = await Auth.init();
-  if (!user) return;
+  if (!user) { window.location.href = 'login.html'; return; }
   document.getElementById('user-email').textContent = user.email;
   await loadPets();
-  setupTabs();
   setupModal();
 });
 
+// ── Загрузка питомцев ──────────────────────────────────────
 async function loadPets() {
   try {
     pets = await API.getPets();
     renderPets();
-    renderCalendar();
   } catch (err) {
     showError('Ошибка загрузки: ' + err.message);
   }
 }
 
-function setupTabs() {
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-    });
-  });
-}
-
+// ── Модальное окно ─────────────────────────────────────────
 function setupModal() {
   document.getElementById('btn-add-pet').addEventListener('click', openCreateModal);
   document.getElementById('btn-cancel').addEventListener('click', closeModal);
@@ -41,6 +31,7 @@ function setupModal() {
   });
 }
 
+// ── Рендер питомцев ────────────────────────────────────────
 function renderPets() {
   const c = document.getElementById('pets-container');
   if (!pets.length) {
@@ -51,21 +42,21 @@ function renderPets() {
 }
 
 function renderPetCard(pet) {
-  const icon    = pet.type === 'Кошка' ? '🐈' : pet.type === 'Другое' ? '🐇' : '🐕';
-  const age     = pet.birth_date ? calcAge(pet.birth_date) + ' · ' : '';
+  const icon = pet.type === 'Кошка' ? '🐈' : pet.type === 'Другое' ? '🐇' : '🐕';
+  const age  = pet.birth_date ? calcAge(pet.birth_date) + ' · ' : '';
 
- const vacRows = (pet.vaccines || [])
+  const vacRows = (pet.vaccines || [])
     .slice()
     .sort((a, b) => new Date(b.date_done || 0) - new Date(a.date_done || 0))
     .map(v => `
-    <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;padding:6px 0;border-bottom:0.5px solid var(--border);align-items:center">
-      <div style="font-size:13px;font-weight:500">${esc(v.name)}</div>
-      <div style="display:flex;align-items:center;gap:4px">
-        ${v.date_done ? `<span style="color:#1D9E75;font-size:14px">✓</span><span style="font-size:12px;color:#374151">${fmtDate(v.date_done)}</span>` : ''}
-      </div>
-      <div>${v.date_next ? `<span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span>` : ''}</div>
-    </div>`).join('');
-  
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;padding:6px 0;border-bottom:0.5px solid var(--border);align-items:center">
+        <div style="font-size:13px;font-weight:500">${esc(v.name)}</div>
+        <div style="display:flex;align-items:center;gap:4px">
+          ${v.date_done ? `<span style="color:#1D9E75;font-size:14px">✓</span><span style="font-size:12px;color:#374151">${fmtDate(v.date_done)}</span>` : ''}
+        </div>
+        <div>${v.date_next ? `<span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span>` : ''}</div>
+      </div>`).join('');
+
   const vacBlock = pet.vaccines?.length
     ? `<div class="vaccine-list"><div class="vaccine-section-title">ПРИВИВКИ</div>${vacRows}</div>`
     : '<div class="no-vaccines">Прививки не добавлены</div>';
@@ -87,145 +78,7 @@ function renderPetCard(pet) {
     </div>`;
 }
 
-// ── Календарь ─────────────────────────────────────────────
-let calYear  = new Date().getFullYear();
-let calMonth = new Date().getMonth();
-
-window.calPrev = function() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); };
-window.calNext = function() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); };
-
-function renderCalendar() {
-  const now   = new Date();
-  const year  = calYear;
-  const month = calMonth;
-
-  const months = ['Январь','Февраль','Март','Апрель','Май','Июнь',
-                  'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  document.getElementById('cal-month-title').textContent = months[month] + ' ' + year;
-
-  // Собираем все даты прививок в этом месяце
-  const eventDays = {};
-  pets.forEach(pet => {
-    (pet.vaccines || []).forEach(v => {
-      // Проверяем date_done
-      if (v.date_done) {
-        const d = new Date(v.date_done);
-        if (d.getFullYear() === year && d.getMonth() === month) {
-          const day = d.getDate();
-          if (!eventDays[day]) eventDays[day] = [];
-          eventDays[day].push({ pet: pet.name, vaccine: v.name, type: 'done' });
-        }
-      }
-      // Проверяем date_next
-      if (v.date_next) {
-        const d = new Date(v.date_next);
-        if (d.getFullYear() === year && d.getMonth() === month) {
-          const day = d.getDate();
-          if (!eventDays[day]) eventDays[day] = [];
-          eventDays[day].push({ pet: pet.name, vaccine: v.name, type: 'next' });
-        }
-      }
-    });
-  });
-
-  // Рендерим сетку
-  const grid = document.getElementById('cal-grid');
-  grid.innerHTML = '';
-
-  ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => {
-    const el = document.createElement('div');
-    el.style.cssText = 'text-align:center;font-size:11px;color:#9ca3af;padding:4px';
-    el.textContent = d;
-    grid.appendChild(el);
-  });
-
-  const lastDay = new Date(year, month + 1, 0).getDate();
-  let startDow = new Date(year, month, 1).getDay();
-  startDow = startDow === 0 ? 6 : startDow - 1;
-
-  for (let i = 0; i < startDow; i++) {
-    const el = document.createElement('div');
-    el.style.cssText = 'text-align:center;font-size:13px;padding:8px 4px;color:#d1d5db';
-    el.textContent = new Date(year, month, -startDow + i + 1).getDate();
-    grid.appendChild(el);
-  }
-
-  for (let d = 1; d <= lastDay; d++) {
-    const el = document.createElement('div');
-    el.style.cssText = 'text-align:center;font-size:13px;padding:6px 4px;border-radius:8px;position:relative;cursor:default';
-    el.textContent = d;
-
-    if (d === now.getDate()) {
-      el.style.background = '#1D9E75';
-      el.style.color = 'white';
-      el.style.fontWeight = '500';
-    }
-
-    if (eventDays[d]) {
-      const dot = document.createElement('div');
-      dot.style.cssText = 'width:5px;height:5px;border-radius:50%;background:#f59e0b;margin:2px auto 0';
-      if (d === now.getDate()) dot.style.background = 'white';
-      el.appendChild(dot);
-      el.title = eventDays[d].map(e => e.pet + ': ' + e.vaccine).join('\n');
-      el.style.cursor = 'pointer';
-      if (d !== now.getDate()) {
-        el.style.background = '#FEF3C7';
-        el.style.color = '#92400E';
-      }
-    }
-
-    grid.appendChild(el);
-  }
-
-  // Список ближайших прививок
-  renderUpcoming();
-}
-
-function renderUpcoming() {
-  const now = new Date();
-  const upcoming = [];
-
-  pets.forEach(pet => {
-    (pet.vaccines || []).forEach(v => {
-      if (v.date_next) {
-        const d = new Date(v.date_next);
-        if (d >= now) {
-          upcoming.push({ date: d, petName: pet.name, vacName: v.name, status: v.status });
-        }
-      }
-      if (v.date_done) {
-        const d = new Date(v.date_done);
-        const diff = (now - d) / (1000 * 60 * 60 * 24);
-        if (diff <= 30 && diff >= 0) {
-          upcoming.push({ date: d, petName: pet.name, vacName: v.name, status: 'done', recent: true });
-        }
-      }
-    });
-  });
-
-  upcoming.sort((a, b) => a.date - b.date);
-
-  const el = document.getElementById('upcoming-list');
-  if (!upcoming.length) {
-    el.innerHTML = '<div style="font-size:13px;color:#9ca3af">Ближайших событий нет.</div>';
-    return;
-  }
-
-  const monthNames = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-  el.innerHTML = upcoming.slice(0, 5).map(e => `
-    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border)">
-      <div style="min-width:52px;text-align:center;flex-shrink:0">
-        <div style="font-size:16px;font-weight:500;color:#1D9E75;line-height:1">${e.date.getDate()}</div>
-        <div style="font-size:10px;color:#9ca3af">${monthNames[e.date.getMonth()]} ${e.date.getFullYear()}</div>
-      </div>
-      <div style="min-width:0">
-        <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.vacName)} — ${esc(e.petName)}</div>
-        <div style="font-size:11px;color:#9ca3af;margin-top:2px">${e.recent ? 'Сделана недавно' : e.status === 'next' ? 'Следующая прививка' : 'Запланировано'}</div>
-      </div>
-    </div>`).join('');
-}
-
-// ── Модалки ───────────────────────────────────────────────
+// ── Создание питомца ───────────────────────────────────────
 function openCreateModal() {
   editingPetId = null;
   tempVaccines = [];
@@ -234,6 +87,7 @@ function openCreateModal() {
   openModal();
 }
 
+// ── Редактирование питомца ─────────────────────────────────
 window.openEditModal = function(id) {
   const pet = pets.find(p => p.id === id);
   if (!pet) return;
@@ -302,6 +156,7 @@ window.removeVaccine = function(i) {
   renderVaccineInputs();
 };
 
+// ── Сохранение ─────────────────────────────────────────────
 async function savePet() {
   syncVaccines();
   const petData = {
@@ -332,7 +187,6 @@ async function savePet() {
     }
     closeModal();
     renderPets();
-    renderCalendar();
   } catch (err) {
     showError(err.message);
   } finally {
@@ -340,18 +194,19 @@ async function savePet() {
   }
 }
 
+// ── Удаление питомца ───────────────────────────────────────
 window.deletePet = async function(id) {
   if (!confirm('Удалить питомца и все прививки?')) return;
   try {
     await API.deletePet(id);
     pets = pets.filter(p => p.id !== id);
     renderPets();
-    renderCalendar();
   } catch (err) {
     showError(err.message);
   }
 };
 
+// ── Утилиты ────────────────────────────────────────────────
 function openModal()  { document.getElementById('modal-overlay').style.display = 'flex'; }
 function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
 
@@ -361,17 +216,11 @@ function setSaving(on) {
   btn.disabled = on;
 }
 
-function badge(status) {
-  const m = { done:['badge-done','Сделана'], soon:['badge-soon','Скоро'], next:['badge-next','Следующая'] };
-  const [cls, label] = m[status] || m.done;
-  return `<span class="badge ${cls}">${label}</span>`;
-}
-
-function fmtDate(d, showYear = true) {
+function fmtDate(d) {
   if (!d) return '—';
   const [y, m, day] = d.split('T')[0].split('-');
   const mon = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][m-1];
-  return showYear ? `${parseInt(day)} ${mon} ${y}` : `${parseInt(day)} ${mon}`;
+  return `${parseInt(day)} ${mon} ${y}`;
 }
 
 function calcAge(b) {
