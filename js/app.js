@@ -54,7 +54,7 @@ function renderPetCard(pet) {
         <div style="display:flex;align-items:center;gap:4px">
           ${v.date_done ? `<span style="color:#1D9E75">✓</span><span style="font-size:13px;color:#374151">${fmtDate(v.date_done)}</span>` : ''}
         </div>
-        <div>${v.date_next ? `<span class="badge badge-next" style="font-size:13px">↻ ${fmtDate(v.date_next)}</span>` : ''}</div>
+        <div>${v.date_next ? `<span class="badge badge-next vac-badge-mobile"><span class="vac-arrow">↻</span> ${fmtDate(v.date_next)}</span>` : ''}</div>
       </div>
       <div class="vac-row-mobile">
         <div class="vac-mobile-name">${esc(v.name)}</div>
