@@ -55,6 +55,11 @@ function renderPetCard(pet) {
           ${v.date_done ? `<span style="color:#1D9E75;font-size:14px">✓</span><span style="font-size:12px;color:#374151">${fmtDate(v.date_done)}</span>` : ''}
         </div>
         <div>${v.date_next ? `<span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span>` : ''}</div>
+      </div>
+      <div class="vac-mobile" style="display:none;padding:6px 0;border-bottom:0.5px solid var(--border)">
+        <div style="font-size:13px;font-weight:500;margin-bottom:4px">${esc(v.name)}</div>
+        ${v.date_done ? `<div style="font-size:12px;color:#374151;margin-bottom:2px"><span style="color:#1D9E75">✓</span> ${fmtDate(v.date_done)}</div>` : ''}
+        ${v.date_next ? `<div><span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span></div>` : ''}
       </div>`).join('');
 
   const vacBlock = pet.vaccines?.length
