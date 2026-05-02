@@ -52,9 +52,9 @@ function renderPetCard(pet) {
     <div class="vac-row-desktop">
       <div style="font-size:13px;font-weight:500">${esc(v.name)}</div>
       <div style="display:flex;align-items:center;gap:4px">
-        ${v.date_done ? `<span style="color:#1D9E75">✓</span><span style="font-size:12px;color:#374151">${fmtDate(v.date_done)}</span>` : ''}
+        ${v.date_done ? `<span style="color:#1D9E75">✓</span><span style="font-size:13px;color:#374151">${fmtDate(v.date_done)}</span>` : ''}
       </div>
-      <div>${v.date_next ? `<span class="badge badge-next">↻ ${fmtDate(v.date_next)}</span>` : ''}</div>
+      <div>${v.date_next ? `<span class="badge badge-next" style="font-size:13px">↻ ${fmtDate(v.date_next)}</span>` : ''}</div>
     </div>
     <div class="vac-row-mobile">
       <div class="vac-mobile-name">${esc(v.name)}</div>
