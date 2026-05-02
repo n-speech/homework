@@ -353,11 +353,61 @@ body {
 }
 
 /* ── Адаптив ───────────────────────────────────────────── */
-@media (max-width: 560px) {
-  .vaccine-form-row { grid-template-columns: 1fr 1fr; }
-  .vaccine-form-row .form-field:nth-child(3),
-  .vaccine-form-row .form-field:nth-child(4) { grid-column: span 1; }
-  .del-vac-btn { grid-column: span 2; width: 100%; }
-  .pet-actions { flex-direction: column; }
+@media (max-width: 768px) {
+
+  /* Шапка */
+  .header { padding: 12px 16px; }
+  #user-email { display: none; }
+
+  /* Навигация */
+  .nav { padding: 0 12px; overflow-x: auto; }
+  .nav-btn { padding: 11px 12px; font-size: 12px; white-space: nowrap; }
+  .btn-primary#btn-add-pet { 
+    padding: 7px 12px; 
+    font-size: 12px; 
+    white-space: nowrap;
+    margin: 6px 0 6px auto;
+  }
+
+  /* Контент */
+  .content { padding: 12px 12px 24px 12px; }
+
+  /* Карточка питомца */
+  .pet-row { flex-wrap: wrap; gap: 8px; }
+  .pet-name { font-size: 16px; }
+  .pet-meta { font-size: 14px; }
+  .pet-actions { 
+    width: 100%; 
+    justify-content: flex-end;
+    margin-top: 4px;
+  }
+
+  /* Прививки */
+  .vaccine-item { 
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 8px 0;
+  }
+  .vaccine-section-title { font-size: 12px; }
+
+  /* Модальное окно */
+  #modal-overlay { padding: 12px 8px; }
+  .modal { padding: 16px; }
   .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+  .vaccine-form-row { 
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .vaccine-form-row .form-field:first-child { grid-column: span 2; }
+  .del-vac-btn { grid-column: span 2; width: 100%; }
+
+  /* Страница входа */
+  .login-box { padding: 24px 16px; }
+}
+
+@media (max-width: 400px) {
+  .nav-btn { padding: 11px 8px; font-size: 11px; }
+  .btn-primary#btn-add-pet { padding: 7px 8px; font-size: 11px; }
+  .pet-icon { width: 36px; height: 36px; font-size: 18px; }
 }
